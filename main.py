@@ -1,17 +1,23 @@
-from typing import Optional, List
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from typing import List
+from fastapi import FastAPI, Depends, HTTPException
+from sqlalchemy.orm import Session
 
-class Item(BaseModel):
-    id: int
-    name: str
-    price: float
-    is_offer: Optional[bool] = None
+import models, schemas
+from database import SessionLocal, engine
+
+# Create the database tables
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# Simulating a database with a list
-items_db: List[Item] = []
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 @app.get("/")
 async def read_root():
     return {"Hello": "World"} 
@@ -20,34 +26,46 @@ async def read_root():
 def say_hello():
     return {"message": "Hello, World!"}
 
-@app.post("/items/", response_model=Item)
-def create_item(item: Item):
-    items_db.append(item)
-    return item
+@app.post("/items/", response_model=schemas.Item)
+def create_item(item: schemas.ItemCreate, db: Session = Depends(get_db)):
+    db_item = models.Item(name=item.name, price=item.price, is_offer=item.is_offer)
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item
 
-@app.get("/items/", response_model=List[Item])
-def read_items():
-    return items_db
+@app.get("/items/", response_model=List[schemas.Item])
+def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    items = db.query(models.Item).offset(skip).limit(limit).all()
+    return items
 
-@app.get("/items/{item_id}", response_model=Item)
-def read_item(item_id: int):
-    for item in items_db:
-        if item.id == item_id:
-            return item
-    raise HTTPException(status_code=404, detail="Item not found")
+@app.get("/items/{item_id}", response_model=schemas.Item)
+def read_item(item_id: int, db: Session = Depends(get_db)):
+    db_item = db.query(models.Item).filter(models.Item.id == item_id).first()
+    if db_item is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return db_item
 
-@app.put("/items/{item_id}", response_model=Item)
-def update_item(item_id: int, item: Item):
-    for index, existing_item in enumerate(items_db):
-        if existing_item.id == item_id:
-            items_db[index] = item
-            return item
-    raise HTTPException(status_code=404, detail="Item not found")
+@app.put("/items/{item_id}", response_model=schemas.Item)
+def update_item(item_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)):
+    db_item = db.query(models.Item).filter(models.Item.id == item_id).first()
+    if db_item is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    db_item.name = item.name
+    db_item.price = item.price
+    db_item.is_offer = item.is_offer
+    
+    db.commit()
+    db.refresh(db_item)
+    return db_item
 
 @app.delete("/items/{item_id}")
-def delete_item(item_id: int):
-    for index, item in enumerate(items_db):
-        if item.id == item_id:
-            items_db.pop(index)
-            return {"message": "Item deleted successfully"}
-    raise HTTPException(status_code=404, detail="Item not found")
+def delete_item(item_id: int, db: Session = Depends(get_db)):
+    db_item = db.query(models.Item).filter(models.Item.id == item_id).first()
+    if db_item is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    db.delete(db_item)
+    db.commit()
+    return {"message": "Item deleted successfully"}
