@@ -1,15 +1,10 @@
-from typing import Optional, List
 from pydantic import BaseModel
 
-class ItemBase(BaseModel):
-    name: str
-    price: float
-    is_offer: Optional[bool] = None
+class ItemCreate(BaseModel):
+    text: str
+    is_done: bool = False
 
-class ItemCreate(ItemBase):
-    pass
-
-class Item(ItemBase):
+class ItemResponse(ItemCreate):
     id: int
 
     class Config:
