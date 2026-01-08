@@ -1,7 +1,8 @@
-# main3.py
+# main_sqlite.py
 # Use SQLite
 # Written by Henry Jia
 # Date: 2025-12-11
+# Updated: 2026-01-08
 
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
