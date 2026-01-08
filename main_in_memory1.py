@@ -33,3 +33,11 @@ def read_item(item_id: int) -> Item:
   if item_id >= len(items):
     raise HTTPException(status_code=404, detail=f"Item {item_id} not found") 
   return items[item_id] 
+
+@app.delete("/items/{item_id}")
+def delete_item(item_id: int):
+    for index, item in enumerate(items):
+        if index == item_id:
+            items.pop(index)
+            return {"message": "Item deleted successfully"}
+    raise HTTPException(status_code=404, detail="Item not found")
