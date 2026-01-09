@@ -68,24 +68,24 @@ define the data schemas for main.py.
 
 ## Running the Application Locally
 1. **Activate the virtual environment**
-  ```
-  source .venv/bin/activate
-  ```
-2. **Install the required dependencies**
-  ```
-  pip install -r requirements.txt
-  ```
+   ```bash
+   source .venv/bin/activate
+   ```
+2. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```   
 3. **Start the FastAPI application**
-  ```
-  uvicorn app.main:app --reload
-  ```
+   ```bash
+   uvicorn app.main:app --reload
+   ```
 4. **Open the app in your browser**
-  ```
-  Visit [http://127.0.0.1:8000](http://127.0.0.1:8000) 
-  ```
+   ```bash
+   Visit [http://127.0.0.1:8000](http://127.0.0.1:8000) 
+   ```
 5. **run verify_crud.py to verify CRUD operations for main.py**
-  ```
-  python3 verify_crud.py
-  ```
+   ```bash
+   python3 verify_crud.py
+   ```
      
      
