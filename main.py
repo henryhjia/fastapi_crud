@@ -1,3 +1,20 @@
+# main.py
+# This is the main entry point for the FastAPI application. It uses SQLite database 
+# defined in database.py and models.py. It also defines the API endpoints for CRUD 
+# operations on the items.
+
+# files involved:
+# main.py
+# database.py
+# models.py
+# schemas.py
+
+# To test
+# python3 verify_crud.py
+
+# This program is similar to main_sqlite.py
+#
+
 from typing import List
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
