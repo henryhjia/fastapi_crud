@@ -80,5 +80,12 @@ define the data schemas for main.py.
   uvicorn app.main:app --reload
   ```
   4. Open the app in your browser
+  ```
   Visit [http://127.0.0.1:8000](http://127.0.0.1:8000) 
+  ```
+  5. run verify_crud.py to verify CRUD operations for main.py
+  ```
+  python3 verify_crud.py
+  ```
+     
      
