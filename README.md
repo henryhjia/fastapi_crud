@@ -77,7 +77,7 @@ define the data schemas for main.py.
    ```   
 3. **Start the FastAPI application**
    ```bash
-   uvicorn app.main:app --reload
+   uvicorn main:app --reload
    ```
 4. **Open the app in your browser**
    ```bash
